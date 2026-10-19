@@ -1,0 +1,195 @@
+
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Misi Detektif Skala</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;font-family:Arial,sans-serif;background:#f3f8e9;color:#173b2b}
+header{background:#145c3b;color:white;padding:25px 18px;text-align:center}
+header h1{margin:8px 0;font-size:clamp(25px,5vw,38px)}
+header p{margin:8px auto;max-width:650px}
+main{max-width:900px;margin:auto;padding:18px}
+.card{background:white;border:2px solid #d7e9b7;border-radius:18px;padding:20px;margin:16px 0;box-shadow:0 4px 12px #173b2b12}
+h2{color:#176b43;margin-top:0}
+input,select{width:100%;padding:12px;margin:6px 0 12px;border:1px solid #a6c79c;border-radius:9px;font-size:16px}
+button{background:#176b43;color:white;border:0;border-radius:10px;padding:12px 17px;font-size:15px;font-weight:bold;cursor:pointer;margin:4px 3px 4px 0}
+button:hover{background:#0c452d}
+button.secondary{background:#e6f2d5;color:#174a32}
+button:disabled{opacity:.45;cursor:not-allowed}
+.route{background:#e0f3ff;border-radius:12px;padding:16px;text-align:center;font-size:18px;line-height:1.8}
+.badge{display:inline-block;background:#ffdf70;padding:6px 10px;border-radius:8px;font-weight:bold}
+.question{border-top:1px solid #dce9d3;padding-top:14px;margin-top:14px}
+.feedback{font-weight:bold;margin:10px 0}
+#game{display:none}
+#progress{height:12px;background:#e2e8d8;border-radius:9px;overflow:hidden}
+#bar{height:100%;width:0;background:#39a768;transition:width .3s}
+footer{text-align:center;padding:20px;color:#557260;font-size:13px}
+</style>
+</head>
+<body>
+<header>
+  <div style="font-size:38px">🕵️ 🗺️ 🔎</div>
+  <h1>MISI DETEKTIF SKALA</h1>
+  <p>Selamatkan Peta Wisata Pontianak!</p>
+  <span class="badge">Matematika Kelas VII</span>
+</header>
+<main>
+<section class="card" id="start">
+  <h2>📁 Berkas Detektif</h2>
+  <p>Panitia sekolah membutuhkan bantuanmu untuk membuat peta rute dari SMP Negeri 1 Kota Pontianak menuju Tugu Khatulistiwa.</p>
+  <label for="nama">Nama detektif</label>
+  <input id="nama" placeholder="Masukkan nama kamu">
+  <label for="kelompok">Nama atau nomor kelompok</label>
+  <input id="kelompok" placeholder="Contoh: Kelompok 1">
+  <label for="tingkat">Tingkat tantangan</label>
+  <select id="tingkat">
+    <option value="penguatan">Perlu Penguatan</option>
+    <option value="berkembang">Berkembang</option>
+    <option value="mandiri">Mandiri</option>
+  </select>
+  <button onclick="mulai()">🔍 Mulai Investigasi</button>
+</section>
+
+<section id="game">
+  <div class="card">
+    <div style="display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap">
+      <strong id="sapaan"></strong>
+      <strong>Skor: <span id="skor">0</span>/100</strong>
+    </div>
+    <p id="progresText">Misi 1 dari 4</p>
+    <div id="progress"><div id="bar"></div></div>
+  </div>
+
+  <div class="card">
+    <div class="route">
+      🏫 SMP Negeri 1 Pontianak<br>
+      <span style="color:#1684bf">〰️〰️🗺️〰️〰️</span><br>
+      🗼 Tugu Khatulistiwa
+    </div>
+    <h2 id="judul"></h2>
+    <p id="cerita"></p>
+    <div id="soal"></div>
+    <button class="secondary" onclick="petunjuk()">💡 Buka petunjuk</button>
+    <p id="hint" hidden></p>
+    <button id="periksa" onclick="periksaJawaban()">Periksa Jawaban</button>
+    <button id="lanjut" onclick="berikutnya()" hidden>Misi berikutnya ➜</button>
+    <p id="feedback" class="feedback" aria-live="polite"></p>
+  </div>
+</section>
+
+<section class="card" id="akhir" hidden>
+  <h2>🏆 Investigasi Selesai!</h2>
+  <p id="hasil"></p>
+  <p id="rincian"></p>
+  <button onclick="location.reload()">Main kembali</button>
+</section>
+</main>
+<footer>Misi Detektif Skala · Media Pembelajaran Matematika</footer>
+
+<script>
+const misi = [
+{
+judul:"Misi 1 — Menemukan Makna Skala",
+cerita:"Pada peta tertulis skala 1 : 200.000. Apa arti skala tersebut?",
+soal:[
+{t:"Angka 1 menunjukkan ...",o:["jarak pada peta","jarak sebenarnya","jumlah kota"],a:0,h:"Angka pertama menunjukkan jarak pada peta."},
+{t:"Angka 200.000 menunjukkan ...",o:["jarak pada peta","jarak sebenarnya dalam satuan yang sama","jumlah penduduk"],a:1,h:"Kedua jarak harus dinyatakan dengan satuan yang sama."}
+]},
+{
+judul:"Misi 2 — Menghubungkan Jarak",
+cerita:"Jarak sebenarnya dari sekolah menuju Tugu Khatulistiwa adalah 12 km. Berapa panjang garis pada peta?",
+soal:[
+{t:"Pada skala 1 : 200.000, berapa panjang garis pada peta?",o:["3 cm","6 cm","12 cm"],a:1,h:"Ubah 12 km menjadi 1.200.000 cm, lalu bagi 200.000."},
+{t:"Pada skala 1 : 400.000, berapa panjang garis pada peta?",o:["3 cm","6 cm","8 cm"],a:0,h:"Hitung 1.200.000 ÷ 400.000."}
+]},
+{
+judul:"Misi 3 — Menyelidiki Faktor Skala",
+cerita:"Rute yang sama memiliki panjang 6 cm pada peta berskala 1 : 200.000. Kita mengubah skala menjadi 1 : 400.000.",
+soal:[
+{t:"Berapa panjang rute pada peta yang baru?",o:["12 cm","6 cm","3 cm"],a:2,h:"Penyebut skala menjadi dua kali lebih besar, sehingga panjang gambar menjadi setengahnya."},
+{t:"Faktor perubahan panjang dari 6 cm menjadi 3 cm adalah ...",o:["0,5","2","3"],a:0,h:"Faktor perubahan = panjang baru ÷ panjang awal."}
+]},
+{
+judul:"Misi 4 — Memecahkan Kasus",
+cerita:"Panjang garis rute pada peta tidak boleh lebih dari 8 cm. Jarak sebenarnya 12 km. Pilih skala yang memenuhi syarat.",
+soal:[
+{t:"Skala manakah yang menghasilkan garis tepat 8 cm?",o:["1 : 100.000","1 : 150.000","1 : 200.000"],a:1,h:"Ubah 12 km menjadi 1.200.000 cm, lalu bagi dengan penyebut skala."},
+{t:"Skala 1 : 200.000 menghasilkan garis 6 cm. Apakah memenuhi batas maksimal 8 cm?",o:["Ya","Tidak"],a:0,h:"Bandingkan 6 cm dengan batas maksimal 8 cm."}
+]}
+];
+
+let indeks=0, jawaban={}, skor=0, nama="", kelompok="", tingkat="penguatan", selesai=false;
+
+function mulai(){
+ nama=document.getElementById("nama").value.trim();
+ kelompok=document.getElementById("kelompok").value.trim();
+ tingkat=document.getElementById("tingkat").value;
+ if(!nama||!kelompok){alert("Isi nama dan kelompok terlebih dahulu, ya!");return}
+ document.getElementById("start").style.display="none";
+ document.getElementById("game").style.display="block";
+ document.getElementById("sapaan").textContent="Detektif "+nama+" · "+kelompok;
+ tampilkan();
+}
+function tampilkan(){
+ const m=misi[indeks];
+ document.getElementById("judul").textContent=m.judul;
+ document.getElementById("cerita").textContent=m.cerita;
+ document.getElementById("progresText").textContent="Misi "+(indeks+1)+" dari "+misi.length;
+ document.getElementById("bar").style.width=(indeks/misi.length*100)+"%";
+ document.getElementById("hint").hidden=true;
+ document.getElementById("hint").textContent="";
+ document.getElementById("feedback").textContent="";
+ document.getElementById("periksa").hidden=false;
+ document.getElementById("lanjut").hidden=true;
+ let html="";
+ m.soal.forEach((s,i)=>{
+  html+='<div class="question"><p><strong>'+(i+1)+'. '+s.t+'</strong></p>';
+  s.o.forEach((o,j)=>{
+   html+='<label style="display:block;padding:7px"><input style="width:auto;margin:0 8px 0 0" type="radio" name="q'+i+'" value="'+j+'">'+o+'</label>';
+  });
+  html+='</div>';
+ });
+ document.getElementById("soal").innerHTML=html;
+}
+function petunjuk(){
+ const m=misi[indeks];
+ document.getElementById("hint").textContent=m.soal.map((s,i)=>(i+1)+". "+s.h).join(" ");
+ document.getElementById("hint").hidden=false;
+}
+function periksaJawaban(){
+ const m=misi[indeks];
+ let pilihan=[];
+ for(let i=0;i<m.soal.length;i++){
+  const el=document.querySelector('input[name="q'+i+'"]:checked');
+  if(!el){alert("Jawab semua pertanyaan pada misi ini dahulu.");return}
+  pilihan.push(Number(el.value));
+ }
+ let benar=0;
+ pilihan.forEach((v,i)=>{if(v===m.soal[i].a)benar++});
+ jawaban[indeks]={pilihan,benar};
+ skor=Math.round(Object.values(jawaban).reduce((n,x)=>n+x.benar,0)/8*100);
+ document.getElementById("skor").textContent=skor;
+ document.getElementById("feedback").textContent=
+ benar===m.soal.length?"Hebat! Semua jawaban misi ini benar.":"Kamu benar "+benar+" dari "+m.soal.length+". Pelajari petunjuk dan lanjutkan investigasi.";
+ document.getElementById("periksa").hidden=true;
+ document.getElementById("lanjut").hidden=false;
+ document.querySelectorAll('#soal input').forEach(x=>x.disabled=true);
+}
+function berikutnya(){
+ if(indeks<misi.length-1){indeks++;tampilkan();return}
+ selesai=true;
+ document.getElementById("game").style.display="none";
+ document.getElementById("akhir").hidden=false;
+ document.getElementById("bar").style.width="100%";
+ document.getElementById("hasil").textContent=nama+" ("+kelompok+"), skor akhir kamu "+skor+" dari 100.";
+ document.getElementById("rincian").textContent="Jawaban benar: "+Object.values(jawaban).reduce((n,x)=>n+x.benar,0)+" dari 8 soal. Tingkat tantangan: "+tingkat+".";
+ localStorage.setItem("hasil-detektif-skala",JSON.stringify({
+ nama,kelompok,tingkat,skor,jawaban,tanggal:new Date().toLocaleString("id-ID")
+ }));
+}
+</script>
+</body>
+</html>
